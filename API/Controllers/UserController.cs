@@ -6,6 +6,7 @@ using API.Controllers.Request;
 using API.Domain;
 using API.Infrastructure;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace API.Controllers
@@ -55,6 +56,31 @@ namespace API.Controllers
                     return BadRequest("Usuario ou senha incorreto!");
 
                 var user = context.Usuarios.Where(x => (x.Email == emailCpf || x.Cpf == emailCpf) && x.Senha == senha).FirstOrDefault();
+
+                return Ok(user);
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
+
+        [HttpPost("SetPhotoUser")]
+        public IActionResult SetPhotoUser(SetPhotoUser request)
+        {
+            try
+            {
+                using var context = new ApiContext();
+
+                if (!context.Usuarios.Any(x => x.Id == request.IdUser))
+                    return BadRequest("Usuario não existe!");
+
+                var user = context.Usuarios.Where(x => x.Id == request.IdUser).FirstOrDefault();
+
+                user.FotoPerfil = request.Foto;
+
+                context.Update(user);
+                context.SaveChanges();
 
                 return Ok(user);
             }
