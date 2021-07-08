@@ -55,7 +55,7 @@ namespace API.Controllers
                 if (!context.Usuarios.Any(x => (x.Email == emailCpf || x.Cpf == emailCpf) && x.Senha == senha))
                     return BadRequest("Usuario ou senha incorreto!");
 
-                var user = context.Usuarios.Where(x => (x.Email == emailCpf || x.Cpf == emailCpf) && x.Senha == senha).FirstOrDefault();
+                var user = context.Usuarios.Include(x => x.FotoPerfil).Where(x => (x.Email == emailCpf || x.Cpf == emailCpf) && x.Senha == senha).FirstOrDefault();
 
                 return Ok(user);
             }
@@ -75,7 +75,7 @@ namespace API.Controllers
                 if (!context.Usuarios.Any(x => x.Id == request.IdUser))
                     return BadRequest("Usuario não existe!");
 
-                var user = context.Usuarios.Where(x => x.Id == request.IdUser).FirstOrDefault();
+                var user = context.Usuarios.Include(x => x.FotoPerfil).Where(x => x.Id == request.IdUser).FirstOrDefault();
 
                 user.FotoPerfil = request.Foto;
 
