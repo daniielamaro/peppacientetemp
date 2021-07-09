@@ -57,7 +57,10 @@ namespace API.Controllers
 
                 var user = context.Usuarios.Include(x => x.FotoPerfil).Where(x => (x.Email == emailCpf || x.Cpf == emailCpf) && x.Senha == senha).FirstOrDefault();
 
-                return Ok(user);
+                return Ok(new {
+                    user.Nome,
+                    user.Id
+                });
             }
             catch (Exception e)
             {
@@ -83,6 +86,29 @@ namespace API.Controllers
                 context.SaveChanges();
 
                 return Ok(user);
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
+
+        [HttpPost("GetPhotoUser")]
+        public IActionResult GetPhotoUser(Guid id)
+        {
+            try
+            {
+                using var context = new ApiContext();
+
+                if (!context.Usuarios.Any(x => x.Id == id))
+                    return BadRequest("Usuario não encontrado!");
+
+                var user = context.Usuarios.Include(x => x.FotoPerfil).Where(x => x.Id == id).FirstOrDefault();
+
+                return Ok(new
+                {
+                    user.FotoPerfil
+                });
             }
             catch (Exception e)
             {
