@@ -59,7 +59,8 @@ namespace API.Controllers
 
                 return Ok(new {
                     user.Nome,
-                    user.Id
+                    user.Id,
+                    user.FotoPerfil
                 });
             }
             catch (Exception e)
