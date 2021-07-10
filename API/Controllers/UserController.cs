@@ -86,7 +86,12 @@ namespace API.Controllers
                 context.Update(user);
                 context.SaveChanges();
 
-                return Ok(user);
+                return Ok(new
+                {
+                    user.Nome,
+                    user.Id,
+                    user.FotoPerfil
+                });
             }
             catch (Exception e)
             {
