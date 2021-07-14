@@ -137,5 +137,34 @@ namespace API.Controllers
                 return BadRequest(e.Message);
             }
         }
+
+        [HttpPost("DeletePhotoUser")]
+        public IActionResult DeletePhotoUser(Guid id)
+        {
+            try
+            {
+                using var context = new ApiContext();
+
+                if (!context.Usuarios.Any(x => x.Id == id))
+                    return BadRequest("Usuario não encontrado!");
+
+                var user = context.Usuarios.Include(x => x.FotoPerfil).Where(x => x.Id == id).FirstOrDefault();
+                var photo = context.Arquivos.Where(x => user.FotoPerfil != null && x.Id == user.FotoPerfil.Id).FirstOrDefault();
+
+                user.FotoPerfil = null;
+
+                context.Update(user);
+
+                if(photo != null) context.Remove(photo);
+
+                context.SaveChanges();
+
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
     }
 }
