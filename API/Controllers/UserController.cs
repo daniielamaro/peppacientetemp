@@ -79,25 +79,25 @@ namespace API.Controllers
                     return BadRequest("Usuario não existe!");
 
                 var user = context.Usuarios.Include(x => x.FotoPerfil).Where(x => x.Id == request.IdUser).FirstOrDefault();
-                var photo = context.Arquivos.Where(x => user.FotoPerfil != null && x.Id == user.FotoPerfil.Id).FirstOrDefault();
 
-                if(photo == null)
+                if(user.FotoPerfil == null)
                 {
-                    photo = new Arquivo
+                    var foto = new Arquivo
                     {
                         Id = Guid.NewGuid(),
                         Nome = "",
                         Tipo = request.Foto.Tipo,
                         Binario = request.Foto.Binario
                     };
-                    user.FotoPerfil = photo;
-                    context.Update(user);
+                    user.FotoPerfil = foto;
+                    context.Arquivos.Add(foto);
+                    context.Usuarios.Update(user);
                 }
                 else
                 {
-                    photo.Binario = request.Foto.Binario;
-                    photo.Tipo = request.Foto.Tipo;
-                    context.Update(photo);
+                    user.FotoPerfil.Binario = request.Foto.Binario;
+                    user.FotoPerfil.Tipo = request.Foto.Tipo;
+                    context.Arquivos.Update(user.FotoPerfil);
                 }
 
                 context.SaveChanges();
@@ -106,7 +106,7 @@ namespace API.Controllers
                 {
                     user.Nome,
                     user.Id,
-                    photo
+                    photo = user.FotoPerfil
                 });
             }
             catch (Exception e)
